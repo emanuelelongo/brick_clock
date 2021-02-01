@@ -1,0 +1,1 @@
+void weather_update(float *temp, float *hum, char *weather);

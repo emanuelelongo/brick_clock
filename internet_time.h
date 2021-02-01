@@ -1,0 +1,1 @@
+void internet_time_setup();

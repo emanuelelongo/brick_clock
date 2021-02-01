@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "/Users/emanuelelongo/repos/arduino/libraries/Arduino_JSON/src",
+                "/Users/emanuelelongo/repos/arduino/libraries/ArduinoJson/src",
+                "/Users/emanuelelongo/Library/Arduino15/packages/esp32/tools/**",
+                "/Users/emanuelelongo/Library/Arduino15/packages/esp32/hardware/esp32/1.0.4/**",
+                "/Users/emanuelelongo/repos/arduino/libraries/**",
+                "/Applications/Arduino.app/Contents/Java/libraries/**"
+            ],
+            "forcedInclude": [],
+            "defines": [
+                "USBCON"
+            ],
+            "macFrameworkPath": [
+                "/System/Library/Frameworks",
+                "/Library/Frameworks"
+            ],
+            "intelliSenseMode": "clang-x64",
+            "compilerPath": "/usr/local/bin/gcc-10",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14"
+        }
+    ],
+    "version": 4
+}

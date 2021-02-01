@@ -1,0 +1,30 @@
+{
+    "files.associations": {
+        "cmath": "cpp",
+        "functional": "cpp",
+        "algorithm": "cpp",
+        "*.def": "cpp",
+        "array": "cpp",
+        "*.tcc": "cpp",
+        "bitset": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "exception": "cpp",
+        "string_view": "cpp",
+        "iomanip": "cpp",
+        "istream": "cpp",
+        "limits": "cpp",
+        "ostream": "cpp",
+        "ratio": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp",
+        "thread": "cpp",
+        "regex": "cpp",
+        "ranges": "cpp",
+        "stop_token": "cpp",
+        "tuple": "cpp",
+        "chrono": "cpp",
+        "random": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "Enabled"
+}
