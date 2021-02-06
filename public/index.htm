@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Brick Clock</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:,">
+    <style>
+        @media screen and (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
+        html {
+            transform: rotate(-90deg);
+            transform-origin: left top;
+            width: 100vh;
+            height: 100vw;
+            overflow-x: hidden;
+            position: absolute;
+            top: 100%;
+            left: 0;
+        }
+        }
+        body {
+            font-family: Helvetica;
+            margin: 0px auto;
+            text-align: center;
+            zoom: 150%
+        }
+
+        table#rgb-config {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+        /* Style the buttons that are used to open the tab content */
+        .tab button {
+            background-color: inherit;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 7px 8px;
+            transition: 0.3s;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        /* Create an active/current tablink class */
+        .tab button.active {
+            background-color: #ccc;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+
+        label[for=ssid], label[for=password], label[for=ssid], label[for=owkey], label[for=owcity], label[for=owcountry] {
+            width: 150px;
+            padding-right: 20px;
+            display: inline-block;
+        }
+        ssid, password, accesspoint, owkey, owcity, owcountry {
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+</head>
+
+<body>
+    <img src="/icon.png" alt="icon" />
+
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'alarmTab')">Alarm</button>
+        <button class="tablinks" onclick="openTab(event, 'ledColorTab')">LED Color</button>
+        <button class="tablinks" onclick="openTab(event, 'wifiTab')">Wi-Fi</button>
+        <button class="tablinks" onclick="openTab(event, 'weatherTab')">Weather</button>
+        <button class="tablinks" onclick="openTab(event, 'dataTab')">Data</button>
+    </div>
+
+    <div id="alarmTab" class="tabcontent">
+        <p>
+            <select id="hour"></select> :
+            <select id="minute"></select>
+            <input id="enabled" type="checkbox" />
+        </p>
+        <p>
+            <label for="mon">Lun</label>
+            <input id="mon" type="checkbox" />
+            <label for="tue">Mar</label>
+            <input id="tue" type="checkbox" />
+            <label for="wed">Mer</label>
+            <input id="wed" type="checkbox" />
+            <label for="thu">Gio</label>
+            <input id="thu" type="checkbox" />
+            <label for="fri">Ven</label>
+            <input id="fri" type="checkbox" />
+            <label for="sat">Sab</label>
+            <input id="sat" type="checkbox" />
+            <label for="sun">Dom</label>
+            <input id="sun" type="checkbox" />
+        </p>
+        <p>
+            <button id="play" onclick="play()">Play</button>
+            <button id="stop" onclick="stop()">Stop</button>
+        </p>
+    </div>
+    <div id="ledColorTab" class="tabcontent">
+        <p>
+            <table id="rgb-config" class="center"></table>
+        </p>
+    </div>
+    <div id="wifiTab" class="tabcontent">
+        <p>
+            <label for="ssid">SSID</label>
+            <input type="text" id="ssid" placeholder="Wi-Fi name">
+        </p>
+        <p>
+            <label for="ssid">Password</label>
+            <input type="password" id="password" placeholder="Wi-Fi password">
+        </p>
+        <p>
+            <i>* Changes to this tab require restart
+        </p>
+    </div>
+    <div id="weatherTab" class="tabcontent">
+        <p>
+            <label for="owkey">Open Weather Key</label>
+            <input type="text" id="owkey" placeholder="api key"/>
+        </p>
+        <p>
+            <label for="owcity">City</label>
+            <input type="text" id="owcity" placeholder="city"/>
+        </p>
+        <p>
+            <label for="owcountry">Country</label>
+            <input type="text" id="owcountry" placeholder="country"/>
+        </p>
+    </div>
+    <div id="dataTab" class="tabcontent">
+        <canvas id="dataChart"></canvas>
+        <p>
+            <label id="range"></label>
+        </p>
+        <p>
+            <button onclick="prevChartPage()"> << </button>
+            <button onclick="nextChartPage()"> >> </button>
+        </p>
+    </div>
+    <p>
+        <button onclick="save()">Save</button>
+        <button onclick="cancel()">Cancel</button>
+        <button onclick="restart()">Restart</button>
+    </p>
+</body>
+
+<script>
+
+    function openTab(evt, tabId) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabId).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+    function cancel() {
+        document.location.reload(true);
+    }
+
+    function save() {
+        let led = [];
+        for(let i=0; i<24; i++) {
+            led.push(document.getElementById(`picker_${i}`).value);
+        }
+
+        fetch("/config", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ssid: document.getElementById("ssid").value,
+                password: document.getElementById("password").value,
+                enabled: document.getElementById("enabled").checked,
+                h: parseInt(document.getElementById("hour").value),
+                m: parseInt(document.getElementById("minute").value),
+                mon: document.getElementById("mon").checked,
+                tue: document.getElementById("tue").checked,
+                wed: document.getElementById("wed").checked,
+                thu: document.getElementById("thu").checked,
+                fri: document.getElementById("fri").checked,
+                sat: document.getElementById("sat").checked,
+                sun: document.getElementById("sun").checked,
+                led,
+                owkey: document.getElementById("owkey").value,  // Open Weather key
+                owcity: document.getElementById("owcity").value, // Open Weather city
+                owcountry: document.getElementById("owcountry").value, // Open Weather city
+            })
+        })
+            .then(() => document.location.reload(true));
+    }
+
+    function load(state) {
+        document.getElementById("enabled").checked = state.enabled;
+        let hour = document.getElementById("hour");
+        for (let i = 0; i < 24; i++) {
+            let opt = document.createElement("option");
+            opt.value = i;
+            opt.text = i.toString().padStart(2, "0");
+            hour.add(opt);
+        }
+        let min = document.getElementById("minute");
+        for (let i = 0; i < 60; i++) {
+            let opt = document.createElement("option");
+            opt.value = i;
+            opt.text = i.toString().padStart(2, "0");
+            min.add(opt);
+        }
+        hour.value = state.h;
+        min.value = state.m;
+        document.getElementById("mon").checked = state.mon;
+        document.getElementById("tue").checked = state.tue;
+        document.getElementById("wed").checked = state.wed;
+        document.getElementById("thu").checked = state.thu;
+        document.getElementById("fri").checked = state.fri;
+        document.getElementById("sat").checked = state.sat;
+        document.getElementById("sun").checked = state.sun;
+
+        let rgbTab = document.getElementById("rgb-config");
+        for (let i = 0; i<24; i++) {
+            let row = document.createElement("tr");
+            rgbTab.appendChild(row);
+            let lblCol = document.createElement("td");
+            row.appendChild(lblCol);
+            lblCol.innerText = `${i.toString().padStart(2, '0')}:00 - ${(i+1).toString().padStart(2, '0')}:00`;
+            let pickerCol = document.createElement("td");
+            row.appendChild(pickerCol);
+            let picker = document.createElement("input");
+            picker.id = `picker_${i}`;
+            picker.type = "color";
+            picker.value = state.led[i] || "#000";
+            pickerCol.appendChild(picker);
+        }
+        document.getElementById("ssid").value = state.ssid;
+        document.getElementById("password").value = state.password;
+        document.getElementById("owkey").value = state.owkey;
+        document.getElementById("owcity").value = state.owcity;
+        document.getElementById("owcountry").value = state.owcountry;
+    }
+
+    function play() {
+        fetch("/play", { method: "POST"});
+    }
+
+    function stop() {
+        fetch("/stop", { method: "POST"});
+    }
+
+    function restart() {
+        fetch("/restart", { method: "POST"});
+    }
+
+    function renderChart(data) {
+        data.sort((a,b) => a.timestamp - b.timestamp);
+        data = data.map(i => ({ ...i, date: new Date(i.timestamp * 1000)}));
+        document.getElementById("range").innerText=`${data[0].date.toISOString().substring(0,10)} - ${data[data.length-1].date.toISOString().substring(0,10)}`;
+
+        var ctx = document.getElementById('dataChart').getContext('2d');
+        let commonDatasetOpt = {pointRadius: 0, cubicInterpolationMode: 'monotone', fill: false, borderWidth: 5};
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(i => i.date.toISOString().substr(11, 5)),
+                datasets: [
+                // INDOOR HUMIDITY
+                {
+                    ...commonDatasetOpt,
+                    label: "Indoor Humidity",
+                    data: data.map(i => (i.indHumMin+i.indHumMax)/2),
+                    borderColor: "rgba(0, 81, 162, 1)",
+                    yAxisID: "y-hum",
+                    borderDash: [10,20]
+                },
+
+                // OUTDOOR HUMIDITY
+                {
+                    ...commonDatasetOpt,
+                    label: "Outdoor Humidity ",
+                    borderColor: "rgba(137, 191, 248, 1)",
+                    data: data.map(i => (i.outHumMin+i.outHumMax)/2),
+                    yAxisID: "y-hum",
+                    borderDash: [10,20]
+                },
+                // INDOOR TEMPERATURE
+                {
+                    ...commonDatasetOpt,
+                    data: data.map(i => i.indTempMin),
+                    borderColor: 'rgba(200, 51, 73, 1)',
+                    yAxisID: "y-temp"
+                }, {
+                    ...commonDatasetOpt,
+                    label: "Indoor Temperature ",
+                    data: data.map(i => i.indTempMax),
+                    backgroundColor: 'rgba(200, 51, 73, 1)',
+                    borderColor: 'rgba(200, 51, 73, 1)',
+                    fill: "-1",
+                    yAxisID: "y-temp"
+                },
+
+                // OUTDOOR TEMPERATURE
+                {
+                    ...commonDatasetOpt,
+                    data: data.map(i => i.outTempMin),
+                    borderColor: 'rgba(248, 187, 208, 1)',
+                    yAxisID: "y-temp"
+                }, {
+                    ...commonDatasetOpt,
+                    label: "Outdoor Temperature ",
+                    data: data.map(i => i.outTempMax),
+                    backgroundColor: 'rgba(248, 187, 208, 1)',
+                    borderColor: 'rgba(248, 187, 208, 1)',
+                    fill: "-1",
+                    yAxisID: "y-temp"
+                },
+
+                // PRESSURE
+                {
+                    ...commonDatasetOpt,
+                    label: "Pressure",
+                    data: data.map(i => (i.pressureMin + i.pressureMax)/2),
+                    fill: true,
+                    backgroundColor: "rgba(251, 239, 204, .5)",
+                    borderColor: "rgba(200, 200, 200, 1)",
+                    yAxisID: "y-press"
+                }]
+            },
+            options: {
+                legend: {
+                    labels: {
+                        filter: x => !!x.text
+                    },
+                    position: "bottom"
+                },
+                scales: {
+                    yAxes: [{
+                        id: "y-temp",
+                        ticks: {
+                            fontColor: "rgba(200, 51, 73, 1)",
+                            fontStyle:"bold",
+                            min: -30,
+                            max: 50
+                        }
+                    }, {
+                        id: "y-hum",
+                        position: "right",
+                        ticks: {
+                            fontColor: "rgba(0, 81, 162, 1)",
+                            fontStyle:"bold",
+                            min: 0,
+                            max: 100
+                        }
+                    }, {
+                        id: "y-press",
+                        position: "right",
+                        borderColor: "rgba(200, 200, 200, 1)",
+                        ticks: {
+                            fontStyle:"bold"
+                        }
+                    }]
+                }
+            }
+        });
+    }
+
+    function nextChartPage() {
+        if(CURRENT_PAGE < 1) {
+            return;
+        }
+
+        fetch(`/data?n=${CURRENT_PAGE-1}`)
+        .then(resp => resp.json())
+        .then(data => {
+            renderChart(data);
+            CURRENT_PAGE--;
+        })
+        .catch(() => {
+            console.log("Page not available");
+        });
+    }
+
+    function prevChartPage() {
+        fetch(`/data?n=${CURRENT_PAGE+1}`)
+        .then(resp => resp.json())
+        .then(data => {
+            renderChart(data);
+            CURRENT_PAGE++;
+        })
+        .catch(() => {
+            console.log("Page not available");
+        });
+    }
+
+    document.getElementsByClassName("tablinks")[0].click();
+
+    fetch("/config")
+    .then(resp => resp.json())
+    .then(state => load(state))
+    .catch(() => {
+        console.log("Can't load data from server. Loading default values.");
+        load({
+            enabled: false,
+            h: 0,
+            m: 0,
+            mon: false,
+            tue: false,
+            wed: false,
+            thu: false,
+            fri: false,
+            sat: false,
+            sun: false,
+            led: [],
+            ssid: "",
+            password: "",
+            owkey: "",
+            owcity: "",
+            owcountry: ""
+        });
+    });
+
+    window.CURRENT_PAGE = 0;
+    fetch("/data")
+        .then(resp => resp.json())
+        .then(data => renderChart(data))
+        .catch(() => {
+            let data = [ { "indHumMax": 49, "indHumMin": 45, "indTempMax": 24, "indTempMin": 23, "outHumMax": 65, "outHumMin": 52, "outTempMax": 6, "outTempMin": 5, "pressureMax": 1011, "pressureMin": 997, "timestamp": 1611766058 }, { "indHumMax": 45, "indHumMin": 45, "indTempMax": 25, "indTempMin": 24, "outHumMax": 65, "outHumMin": 65, "outTempMax": 6, "outTempMin": 6, "pressureMax": 997, "pressureMin": 997, "timestamp": 1611585646 }, { "indHumMax": 45, "indHumMin": 45, "indTempMax": 25, "indTempMin": 24, "outHumMax": 65, "outHumMin": 65, "outTempMax": 6, "outTempMin": 6, "pressureMax": 997, "pressureMin": 997, "timestamp": 1611585714 }, { "indHumMax": 45, "indHumMin": 45, "indTempMax": 25, "indTempMin": 24, "outHumMax": 65, "outHumMin": 65, "outTempMax": 6, "outTempMin": 6, "pressureMax": 997, "pressureMin": 997, "timestamp": 1611585774 }, { "indHumMax": 47, "indHumMin": 44, "indTempMax": 25, "indTempMin": 23, "outHumMax": 65, "outHumMin": 65, "outTempMax": 6, "outTempMin": 6, "pressureMax": 997, "pressureMin": 997, "timestamp": 1611585823 }, { "indHumMax": 47, "indHumMin": 45, "indTempMax": 25, "indTempMin": 23, "outHumMax": 65, "outHumMin": 65, "outTempMax": 6, "outTempMin": 6, "pressureMax": 997, "pressureMin": 997, "timestamp": 1611585876 }, { "indHumMax": 47, "indHumMin": 44, "indTempMax": 25, "indTempMin": 23, "outHumMax": 65, "outHumMin": 65, "outTempMax": 6, "outTempMin": 6, "pressureMax": 997, "pressureMin": 997, "timestamp": 1611585936 }, { "indHumMax": 47, "indHumMin": 44, "indTempMax": 25, "indTempMin": 23, "outHumMax": 65, "outHumMin": 65, "outTempMax": 6, "outTempMin": 6, "pressureMax": 997, "pressureMin": 997, "timestamp": 1611585997 }, { "indHumMax": 47, "indHumMin": 45, "indTempMax": 25, "indTempMin": 24, "outHumMax": 65, "outHumMin": 65, "outTempMax": 6, "outTempMin": 6, "pressureMax": 997, "pressureMin": 997, "timestamp": 1611586057 }, { "indHumMax": 47, "indHumMin": 45, "indTempMax": 25, "indTempMin": 24, "outHumMax": 65, "outHumMin": 65, "outTempMax": 6, "outTempMin": 6, "pressureMax": 997, "pressureMin": 997, "timestamp": 1611586057 }, { "indHumMax": 51, "indHumMin": 47, "indTempMax": 24, "indTempMin": 23, "outHumMax": 65, "outHumMin": 65, "outTempMax": 6, "outTempMin": 6, "pressureMax": 998, "pressureMin": 997, "timestamp": 1611588548 }, { "indHumMax": 50, "indHumMin": 44, "indTempMax": 25, "indTempMin": 23, "outHumMax": 93, "outHumMin": 65, "outTempMax": 6, "outTempMin": 3, "pressureMax": 998, "pressureMin": 995, "timestamp": 1611588608 }, { "indHumMax": 50, "indHumMin": 44, "indTempMax": 25, "indTempMin": 23, "outHumMax": 93, "outHumMin": 65, "outTempMax": 6, "outTempMin": 3, "pressureMax": 998, "pressureMin": 995, "timestamp": 1611588608 }, { "indHumMax": 50, "indHumMin": 44, "indTempMax": 25, "indTempMin": 23, "outHumMax": 93, "outHumMin": 65, "outTempMax": 6, "outTempMin": 3, "pressureMax": 998, "pressureMin": 995, "timestamp": 1611588608 }, { "indHumMax": 60, "indHumMin": 44, "indTempMax": 25, "indTempMin": 23, "outHumMax": 93, "outHumMin": 65, "outTempMax": 6, "outTempMin": 4, "pressureMax": 999, "pressureMin": 995, "timestamp": 1611593321 }, { "indHumMax": 60, "indHumMin": 44, "indTempMax": 25, "indTempMin": 23, "outHumMax": 93, "outHumMin": 65, "outTempMax": 6, "outTempMin": 4, "pressureMax": 999, "pressureMin": 995, "timestamp": 1611593321 } ];
+            renderChart(data);
+            console.log("No data available");
+        })
+
+</script>
+
+</html>

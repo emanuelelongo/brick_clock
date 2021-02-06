@@ -1,0 +1,1 @@
+void web_setup();

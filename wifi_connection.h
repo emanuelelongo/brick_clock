@@ -1,0 +1,1 @@
+bool wifi_connection_start(const char *ap_ssid);
