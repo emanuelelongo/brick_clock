@@ -6,7 +6,7 @@ Some key points about the project:
 * BrickClock is a simple alarm clock plus temperature, pressure and humidity monitoring
 * The name comes from the fact that I personally used a big Lego brick as a case
 * A WiFi connection is required to operate
-* It has a BMP280 sensor to collect indoor data whereas use the [OpenWeather API](https://openweathermap.org) to get outdoor data;  
+* It has a BMP280 sensor to collect indoor data whereas the [OpenWeather API](https://openweathermap.org) is used to get outdoor data;  
 Maybe in the future I'll use another sensor to collect external temperature and humidity... we'll see
 * It use a HR-SR04 ultrasonic sensor as a unique, sleepiness-proof, interface with the user: roughly put your hand in front of the clock to stop the alarm sound or change the view.
 * All the settings are made through the exposed web page
@@ -16,10 +16,13 @@ Maybe in the future I'll use another sensor to collect external temperature and 
 * There is a RGB Led on the back that can be configured to change color by time
 * The alarm can be scheduled by week days and the melody is a nerdy Start Wars theme (I'm planning to make it customizable)
 
+## How it looks 
+Ok, neither building cases nor css are my speciality.
+
 ![](brickclock.jpg)
 
 ## Parts list
-* ESP32 - 38 pin variant - [Amazon](https://amzn.to/39W4oeO)
+* ESP32 - 38 pin variant - [Amazon](https://amzn.to/2LpR4Wq)
 * ST7735S - TFT Display 160x128 with SD card reader - [Amazon](https://amzn.to/36MLlBF) - [Amazon (alternative)](https://amzn.to/2YSLvTq)
 * HC-SR04 Ultrasonic Distance Sensor - [Amazon](https://amzn.to/3aDzEOF)
 * RGB LED (com. cathode, rbg) - [Amazon](https://amzn.to/3aH53Qe)
